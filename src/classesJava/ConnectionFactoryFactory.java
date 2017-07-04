@@ -1,12 +1,11 @@
 package classesJava;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class ConnectionFactoryFactory {
+
     public static enum FactoryType {JDBS, C3P0, DBCP};
+
     private static FactoryType currentType = FactoryType.JDBS;
-    private static List<ConnectionFactory> allFactories = new LinkedList<>();
+//    private static List<ConnectionFactory> allFactories = new LinkedList<>();
     public static synchronized void setType (FactoryType type) {
         currentType = type;
     }

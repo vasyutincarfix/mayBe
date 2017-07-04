@@ -1,8 +1,7 @@
 package classesJava;
 
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
-
+import java.sql.PreparedStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,33 +9,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJdbs implements UserDao {
-    private static final  ConnectionFactory factory = ConnectionFactoryFactory.newconnectionFactory();
+    public static ConnectionFactory factory = ConnectionFactoryFactory.newconnectionFactory();
+    public static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
     public static final String JDBC_URL = "jdbc:mysql://localhost:3306/testBase?useSSL=false";
     public static final String LOGIN =  "root";
     public static final String PASSWORD = "root";
     public static final String SELECT_ALL_USERS = "SELECT * FROM Tables.users;";
     public static final String INSERT = "INSERT INTO `Tables`.`users` (`id`, `login`, `email`, `usercol`) VALUES ('55', 'dfg', 'skldf', '');";
-
-
     static Connection connection;
     static Statement statement;
     static PreparedStatement preparedStatement;
     static ResultSet result;
 
     //connect
-    public static Connection getConnection() {
+    public static Connection getConnection() throws ClassNotFoundException {
         try {
-            connection = (Connection) factory.newConnectoon();
-//            connection = (Connection) DriverManager.getConnection(JDBC_URL, LOGIN, PASSWORD);
-//            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-//            connection.setAutoCommit(false);
+            connection = factory.newConnectoon();
         } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
         return connection;
     }
 
-
   @Override
-    public List<User> selectAll() {
+    public List<User> selectAll() throws ClassNotFoundException {
         ResultSet resultSet;
         List<User> listUsers = new ArrayList<>();
         try {
@@ -49,9 +43,10 @@ public class UserDaoJdbs implements UserDao {
                 us.setUsercol(result.getString("usercol"));
                 listUsers.add(us);
             }
-            result.close();
+            resultSet.close();
             statement.close();
             connection.close();
+            factory.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -59,29 +54,30 @@ public class UserDaoJdbs implements UserDao {
     }
 
     @Override
-    public void deleteById(int id) {
+    public void deleteById(int id) throws ClassNotFoundException {
         try {
             getStatement().executeUpdate("DELETE FROM Tables.users WHERE id=" + String.valueOf(id));
             connection.commit();
             statement.close();
             connection.close();
+            factory.close();
         } catch (SQLException e) {e.printStackTrace();}
     }
 
-    public void deleteByIdPreparedStatemend(int id) {
-        String sql = "DELETE FROM Tables.users WHERE id=?;";
-        PreparedStatement ps;
-        try {
-            ps = getPreparedStatement(sql);
-            ps.setInt(1, id);
-            ps.executeUpdate();
-            connection.commit();
-            preparedStatement.close();
-            connection.close();
-        } catch (SQLException e) {e.printStackTrace();}
-    }
+//    public void deleteByIdPreparedStatemend(int id) {
+////        String sql = "DELETE FROM Tables.users WHERE id=?;";
+////        PreparedStatement ps;
+////        try {
+//////            ps = getPreparedStatement(sql);
+////            ps.setInt(1, id);
+////            ps.executeUpdate();
+////            connection.commit();
+////            preparedStatement.close();
+////            connection.close();
+//        } catch (SQLException e) {e.printStackTrace();}
+//    }
     @Override
-    public void insert(User user) {
+    public void insert(User user) throws ClassNotFoundException {
 
         try {
             getStatement().executeUpdate("INSERT INTO `Tables`.`users` (`id`, `login`, `email`, `usercol`) " +
@@ -92,57 +88,34 @@ public class UserDaoJdbs implements UserDao {
             connection.commit();
             statement.close();
             connection.close();
+            factory.close();
         } catch (SQLException e) {e.printStackTrace();}
     }
 
     //statament
-    public static Statement getStatement() {
+    public static Statement getStatement() throws ClassNotFoundException {
         try {
             statement = getConnection().createStatement();
         } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
         return statement;
     }
     //prepareStatemend
-    public static PreparedStatement getPreparedStatement(String sql) {
-        try {
-            preparedStatement = (PreparedStatement) getConnection().prepareStatement(sql);
-        } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
-        return preparedStatement;
-    }
+//    public static PreparedStatement getPreparedStatement(String sql) {
+//        try {
+//            preparedStatement = (PreparedStatement) getConnection().prepareStatement(sql);
+//        } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
+//        return preparedStatement;
+//    }
     //result из mysql
-    public static ResultSet getResultSet(String str)  {
+    public static ResultSet getResultSet(String str) throws ClassNotFoundException {
         try {
             result = getStatement().executeQuery(str);
         } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
         return result;
     }
 
-    public static void main(String[] args) throws SQLException {
-//        User user = new User();
-//        user.setId(7); user.setLogin("asd");user.setEmail("djh@com"); user.setUsercol(null);
-//        new UserDaoJdbs().insert(user);
-        System.out.println(new UserDaoJdbs().selectAll().size());
-//        Statement st;
-//        try {
-//            connection = (Connection) DriverManager.getConnection(JDBC_URL, LOGIN, PASSWORD);
-//            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-//            connection.setAutoCommit(false);
-//            statement = connection.createStatement();
-//            statement.executeUpdate(INSERT);
-//            connection.commit();
-//
-////            result.close();
-//            statement.close();
-//            connection.close();
-////            System.out.println(a);
-//            System.out.println("ok");
-//        } catch (SQLException sql) {
-//            sql.printStackTrace();
-//        }
-////
-////
-//
-   }
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
+    }
 
 }
