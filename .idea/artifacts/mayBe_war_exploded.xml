@@ -1,0 +1,27 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="mayBe:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/mayBe_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="mayBe/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="mayBe" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="tapestry-5.3.6-5.3.6" />
+          <element id="library" level="project" name="Hibernate 5.2.10-5.2.10" />
+          <element id="library" level="project" name="Hibernate Validator-5.0.1" />
+          <element id="library" level="project" name="Arquillian JUnit:Release" />
+          <element id="library" level="project" name="Spring-4.3.9.RELEASE" />
+          <element id="library" level="project" name="mysql-connector-java-5.1.42-bin" />
+          <element id="library" level="project" name="c3p0-0.9.5.2" />
+          <element id="library" level="project" name="mchange-commons-java-0.2.3.4" />
+          <element id="library" level="project" name="slf4j-simple-1.8.0-alpha2" />
+          <element id="library" level="project" name="proxool-0.9.1" />
+          <element id="library" level="project" name="commons-dbcp2-2.1" />
+          <element id="library" level="project" name="commons-pool2-2.4" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
