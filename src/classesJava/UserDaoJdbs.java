@@ -3,7 +3,6 @@ package classesJava;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -23,6 +22,18 @@ public class UserDaoJdbs implements UserDao {
     static Statement statement;
     static PreparedStatement preparedStatement;
     static ResultSet result;
+
+    //connect
+    public static Connection getConnection() {
+        try {
+            connection = (Connection) factory.newConnectoon();
+//            connection = (Connection) DriverManager.getConnection(JDBC_URL, LOGIN, PASSWORD);
+//            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+//            connection.setAutoCommit(false);
+        } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
+        return connection;
+    }
+
 
   @Override
     public List<User> selectAll() {
@@ -83,15 +94,7 @@ public class UserDaoJdbs implements UserDao {
             connection.close();
         } catch (SQLException e) {e.printStackTrace();}
     }
-    //connect
-    public static Connection getConnection() {
-        try {
-            connection = (Connection) DriverManager.getConnection(JDBC_URL, LOGIN, PASSWORD);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-            connection.setAutoCommit(false);
-        } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
-        return connection;
-    }
+
     //statament
     public static Statement getStatement() {
         try {

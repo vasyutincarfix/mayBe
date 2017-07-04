@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ConnectionFactoryFactory {
-    public static enum FactoryType {RAW, C3P0, DBCP};
-    private static FactoryType currentType = FactoryType.RAW;
+    public static enum FactoryType {JDBS, C3P0, DBCP};
+    private static FactoryType currentType = FactoryType.JDBS;
     private static List<ConnectionFactory> allFactories = new LinkedList<>();
     public static synchronized void setType (FactoryType type) {
         currentType = type;
@@ -13,7 +13,7 @@ public class ConnectionFactoryFactory {
     public static synchronized ConnectionFactory newconnectionFactory() {
         ConnectionFactory result;
         switch (currentType) {
-            case RAW:
+            case JDBS:
                 result = new ConnectionFactoryJdbc();
                 break;
             case C3P0:
