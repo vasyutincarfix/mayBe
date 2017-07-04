@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJdbs implements UserDao {
-//    private final  ConnectionFactory factory;
+    private final  ConnectionFactory factory = ConnectionFactoryFactory.newconnectionFactory();
     public static final String JDBC_URL = "jdbc:mysql://localhost:3306/testBase?useSSL=false";
     public static final String LOGIN =  "root";
     public static final String PASSWORD = "root";
@@ -24,10 +24,6 @@ public class UserDaoJdbs implements UserDao {
     static PreparedStatement preparedStatement;
     static ResultSet result;
 
-
-    public UserDaoJdbs() throws SQLException {
-//        factory = ConnectionFactoryFactory.setType(ConnectionFactoryFactory.FactoryType.C3P0);
-    }
   @Override
     public List<User> selectAll() {
         ResultSet resultSet;
