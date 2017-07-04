@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJdbs implements UserDao {
-    private final  ConnectionFactory factory = ConnectionFactoryFactory.newconnectionFactory();
+    private static final  ConnectionFactory factory = ConnectionFactoryFactory.newconnectionFactory();
     public static final String JDBC_URL = "jdbc:mysql://localhost:3306/testBase?useSSL=false";
     public static final String LOGIN =  "root";
     public static final String PASSWORD = "root";
