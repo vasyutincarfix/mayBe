@@ -1,10 +1,6 @@
 package classesJava;
 
-import java.sql.PreparedStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,17 +72,45 @@ public class UserDaoJdbs implements UserDao {
 ////            connection.close();
 //        } catch (SQLException e) {e.printStackTrace();}
 //    }
-    @Override
-    public void insert(User user) throws ClassNotFoundException {
+//Проверка логина на повторение
+    private static boolean existWithLogin0(Connection connection, String login) throws SQLException, NotUniqueUserLoginException {
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT login FROM Tables.users where login=\"" + login + "\"");
+        return resultSet.next();
+    }
+// Проверка почты на повторение
+    private static boolean existWithEmail0(Connection connection, String email) throws SQLException, NotUniqueUserEmaiException {
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT email FROM Tables.users where email=\"" + email + "\"");
+        return resultSet.next();
+    }
 
+    @Override
+    public void insert(User user) throws ClassNotFoundException, NotUniqueUserLoginException, NotUniqueUserEmaiException {
+            getConnection();
         try {
-            getStatement().executeUpdate("INSERT INTO `Tables`.`users` (`id`, `login`, `email`, `usercol`) " +
-                    "VALUES ('" + user.getId() + "'," +
-                    " '" + user.getLogin() + "', " +
-                    "'" + user.getEmail() + "', " +
-                    "'" +user.getUsercol() + "');");
+            if(existWithLogin0(connection, user.login)) {
+                throw new NotUniqueUserLoginException("LoginError");
+            }
+            if(existWithEmail0(connection, user.email)) {
+                throw new NotUniqueUserEmaiException("MailError");
+            }
+            preparedStatement = connection.prepareStatement("INSERT INTO Tables.users (id, login, email, usercol) VALUES (?, ?, ?, ?)");
+            preparedStatement.setInt(1, user.id);
+            preparedStatement.setString(2, user.login);
+            preparedStatement.setString(3, user.email);
+            preparedStatement.setString(4, user.usercol);
+            preparedStatement.executeUpdate();
+
+         String string = "INSER INTO users (id, login, email, usercol) VALUES (?, ?, ?, ?);";
+
+//            getStatement().executeUpdate("INSERT INTO `Tables`.`users` (`id`, `login`, `email`, `usercol`) " +
+//                    "VALUES ('" + user.getId() + "'," +
+//                    " '" + user.getLogin() + "', " +
+//                    "'" + user.getEmail() + "', " +
+//                    "'" +user.getUsercol() + "');");
             connection.commit();
-            statement.close();
+            preparedStatement.close();
             connection.close();
             factory.close();
         } catch (SQLException e) {e.printStackTrace();}
@@ -114,7 +138,11 @@ public class UserDaoJdbs implements UserDao {
         return result;
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, NotUniqueUserLoginException {
+       connection = getConnection();
+        User user = new User();
+        user.setId(7);user.setLogin("ff");user.setEmail("fff");user.setUsercol("coll");
+        System.out.println(existWithLogin0(connection,user.login));
 
     }
 
