@@ -10,7 +10,6 @@ import static classesJava.UserDaoJdbs.*;
 
 
 public class ConnectorFactoryDbcp implements ConnectionFactory {
-
     Connection connection;
     BasicDataSource dataSource;
     @Override
