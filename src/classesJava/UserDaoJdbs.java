@@ -1,14 +1,22 @@
 package classesJava;
 
+import com.sun.rowset.WebRowSetImpl;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import javax.sql.rowset.WebRowSet;
+import java.io.StringReader;
+import java.net.URISyntaxException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class UserDaoJdbs implements UserDao {
     public static ConnectionFactory factory = ConnectionFactoryFactory.newconnectionFactory();
     public static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
     public static final String JDBC_URL = "jdbc:mysql://localhost:3306/testBase?useSSL=false";
-    public static final String LOGIN =  "root";
+    public static final String LOGIN = "root";
     public static final String PASSWORD = "root";
     public static final String SELECT_ALL_USERS = "SELECT * FROM Tables.users;";
     public static final String INSERT = "INSERT INTO `Tables`.`users` (`id`, `login`, `email`, `usercol`) VALUES ('55', 'dfg', 'skldf', '');";
@@ -16,20 +24,42 @@ public class UserDaoJdbs implements UserDao {
     static Statement statement;
     static PreparedStatement preparedStatement;
     static ResultSet result;
+    private static final Logger logger = Logger.getLogger(getCurrentClassName());
+    String log4jConfPath = "/path/to/log4j.properties";
+
+
+
+    //Логирование
+    public static String getCurrentClassName () {
+        try {
+            throw new RuntimeException();
+        }
+        catch (RuntimeException e) {
+            return e.getStackTrace()[1].getClassName();
+        }
+    }
+
+
+
 
     //connect
     public static Connection getConnection() throws ClassNotFoundException {
         try {
+            logger.debug("get connection!!!!!!!!!!!!");
             connection = factory.newConnectoon();
-        } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
+            logger.debug("create Factory" + connection);
+        } catch (SQLException sqlExc) {
+            sqlExc.printStackTrace();
+        }
         return connection;
     }
 
-  @Override
+    @Override
     public List<User> selectAll() throws ClassNotFoundException {
         ResultSet resultSet;
         List<User> listUsers = new ArrayList<>();
         try {
+            logger.warn("selectAll DB");
             resultSet = getResultSet(SELECT_ALL_USERS);
             while (resultSet.next()) {
                 User us = new User();
@@ -39,10 +69,15 @@ public class UserDaoJdbs implements UserDao {
                 us.setUsercol(result.getString("usercol"));
                 listUsers.add(us);
             }
+            logger.warn("clouse resultset");
             resultSet.close();
+            logger.debug("clouse statemend");
             statement.close();
+            logger.warn("clouse connection");
             connection.close();
+            logger.debug("clouse factory");
             factory.close();
+            logger.debug("clouse end");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -57,10 +92,12 @@ public class UserDaoJdbs implements UserDao {
             statement.close();
             connection.close();
             factory.close();
-        } catch (SQLException e) {e.printStackTrace();}
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-//    public void deleteByIdPreparedStatemend(int id) {
+    //    public void deleteByIdPreparedStatemend(int id) {
 ////        String sql = "DELETE FROM Tables.users WHERE id=?;";
 ////        PreparedStatement ps;
 ////        try {
@@ -78,7 +115,8 @@ public class UserDaoJdbs implements UserDao {
         ResultSet resultSet = statement.executeQuery("SELECT login FROM Tables.users where login=\"" + login + "\"");
         return resultSet.next();
     }
-// Проверка почты на повторение
+
+    // Проверка почты на повторение
     private static boolean existWithEmail0(Connection connection, String email) throws SQLException, NotUniqueUserEmaiException {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT email FROM Tables.users where email=\"" + email + "\"");
@@ -87,12 +125,12 @@ public class UserDaoJdbs implements UserDao {
 
     @Override
     public void insert(User user) throws ClassNotFoundException, NotUniqueUserLoginException, NotUniqueUserEmaiException {
-            getConnection();
+        getConnection();
         try {
-            if(existWithLogin0(connection, user.login)) {
+            if (existWithLogin0(connection, user.login)) {
                 throw new NotUniqueUserLoginException("LoginError");
             }
-            if(existWithEmail0(connection, user.email)) {
+            if (existWithEmail0(connection, user.email)) {
                 throw new NotUniqueUserEmaiException("MailError");
             }
             preparedStatement = connection.prepareStatement("INSERT INTO Tables.users (id, login, email, usercol) VALUES (?, ?, ?, ?)");
@@ -102,7 +140,7 @@ public class UserDaoJdbs implements UserDao {
             preparedStatement.setString(4, user.usercol);
             preparedStatement.executeUpdate();
 
-         String string = "INSER INTO users (id, login, email, usercol) VALUES (?, ?, ?, ?);";
+            String string = "INSER INTO users (id, login, email, usercol) VALUES (?, ?, ?, ?);";
 
 //            getStatement().executeUpdate("INSERT INTO `Tables`.`users` (`id`, `login`, `email`, `usercol`) " +
 //                    "VALUES ('" + user.getId() + "'," +
@@ -113,16 +151,21 @@ public class UserDaoJdbs implements UserDao {
             preparedStatement.close();
             connection.close();
             factory.close();
-        } catch (SQLException e) {e.printStackTrace();}
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     //statament
     public static Statement getStatement() throws ClassNotFoundException {
         try {
             statement = getConnection().createStatement();
-        } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
+        } catch (SQLException sqlExc) {
+            sqlExc.printStackTrace();
+        }
         return statement;
     }
+
     //prepareStatemend
 //    public static PreparedStatement getPreparedStatement(String sql) {
 //        try {
@@ -134,16 +177,44 @@ public class UserDaoJdbs implements UserDao {
     public static ResultSet getResultSet(String str) throws ClassNotFoundException {
         try {
             result = getStatement().executeQuery(str);
-        } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
+        } catch (SQLException sqlExc) {
+            sqlExc.printStackTrace();
+        }
         return result;
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, NotUniqueUserLoginException {
-       connection = getConnection();
-        User user = new User();
-        user.setId(7);user.setLogin("ff");user.setEmail("fff");user.setUsercol("coll");
-        System.out.println(existWithLogin0(connection,user.login));
-
+    private static void populate(WebRowSet rowSet_0) throws SQLException {
+        rowSet_0.setCommand(SELECT_ALL_USERS);
+        rowSet_0.setUrl(JDBC_URL);
+        rowSet_0.setUsername(LOGIN);
+        rowSet_0.setPassword(PASSWORD);
+        rowSet_0.execute();
     }
 
+    private static WebRowSet fromXML(String strPresintation) throws SQLException {
+        WebRowSet rowSet_1 = new WebRowSetImpl();
+        rowSet_1.readXml(new StringReader(strPresintation));
+        return rowSet_1;
+    }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, NotUniqueUserLoginException, URISyntaxException {
+        String log4jConfPath = "/home/sysadmin/projects/mayBe/src/classesJava/resourses/log4j.properties";
+        PropertyConfigurator.configure(log4jConfPath);
+
+       UserDaoJdbs userDaoJdbs = new UserDaoJdbs();
+        connection = getConnection();
+       userDaoJdbs.selectAll();
+
+
+
+//        WebRowSet rowSet_0 = new WebRowSetImpl();
+//        populate(rowSet_0);
+//        fromXML(rowSet_0.toString());
+//        User user = new User();
+//        user.setId(7);user.setLogin("ff");user.setEmail("fff");user.setUsercol("coll");
+//        System.out.println(existWithLogin0(connection,user.login));
+
+
+    }
 }
+
