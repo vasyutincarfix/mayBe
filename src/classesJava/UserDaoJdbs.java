@@ -1,6 +1,7 @@
 package classesJava;
 
 import com.sun.rowset.WebRowSetImpl;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -198,8 +199,8 @@ public class UserDaoJdbs implements UserDao {
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException, NotUniqueUserLoginException, URISyntaxException {
-        String log4jConfPath = "/home/sysadmin/projects/mayBe/src/classesJava/resourses/log4j.properties";
-        PropertyConfigurator.configure(log4jConfPath);
+        PropertyConfigurator.configure("/home/sysadmin/projects/mayBe/src/classesJava/resourses/log4j.properties");
+        BasicConfigurator.configure();
 
        UserDaoJdbs userDaoJdbs = new UserDaoJdbs();
         connection = getConnection();
