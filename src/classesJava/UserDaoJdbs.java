@@ -20,6 +20,7 @@ public class UserDaoJdbs implements UserDao {
     public static final String LOGIN = "root";
     public static final String PASSWORD = "root";
     public static final String SELECT_ALL_USERS = "SELECT * FROM Tables.users;";
+    public static final String SELECT_BY_ID = "SELECT * FROM Tables.users where id=?";
     public static final String INSERT = "INSERT INTO `Tables`.`users` (`id`, `login`, `email`, `usercol`) VALUES ('55', 'dfg', 'skldf', '');";
     static Connection connection;
     static Statement statement;
@@ -123,7 +124,22 @@ public class UserDaoJdbs implements UserDao {
         ResultSet resultSet = statement.executeQuery("SELECT email FROM Tables.users where email=\"" + email + "\"");
         return resultSet.next();
     }
+    //получение юзера по id
+    @Override
+    public User selectById(int id) throws DBSystemException, ClassNotFoundException, SQLException {
+        preparedStatement = getPreparedStatement(SELECT_BY_ID);
+        preparedStatement.setInt(1, id);
+        result = preparedStatement.executeQuery();
+        User us = new User();
+        while (result.next()) {
+            us.setId(result.getInt("id"));
+            us.setLogin(result.getString("login"));
+            us.setEmail(result.getString("email"));
+            us.setUsercol(result.getString("usercol"));
+        }
 
+        return us;
+    }
     @Override
     public void insert(User user) throws ClassNotFoundException, NotUniqueUserLoginException, NotUniqueUserEmaiException {
         getConnection();
@@ -157,6 +173,8 @@ public class UserDaoJdbs implements UserDao {
         }
     }
 
+
+
     //statament
     public static Statement getStatement() throws ClassNotFoundException {
         try {
@@ -168,12 +186,12 @@ public class UserDaoJdbs implements UserDao {
     }
 
     //prepareStatemend
-//    public static PreparedStatement getPreparedStatement(String sql) {
-//        try {
-//            preparedStatement = (PreparedStatement) getConnection().prepareStatement(sql);
-//        } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
-//        return preparedStatement;
-//    }
+    public static PreparedStatement getPreparedStatement(String sql) throws ClassNotFoundException {
+        try {
+            preparedStatement = (PreparedStatement) getConnection().prepareStatement(sql);
+        } catch (SQLException sqlExc) {sqlExc.printStackTrace();}
+        return preparedStatement;
+    }
     //result из mysql
     public static ResultSet getResultSet(String str) throws ClassNotFoundException {
         try {

@@ -66,6 +66,11 @@ public class UserDaoJdbsC3po implements UserDao {
 
     }
 
+    @Override
+    public User selectById(int id) throws DBSystemException, ClassNotFoundException, SQLException {
+        return null;
+    }
+
     public static Connection getConnection() throws SQLException {
         cpds = new ComboPooledDataSource();
         cpds.setJdbcUrl("jdbc:mysql://localhost:3306/testBase");

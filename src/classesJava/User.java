@@ -1,11 +1,21 @@
 package classesJava;
 
 public class User {
-    int id;
-    String login;
-    String email;
-    String usercol;
+    public int id;
+    public String login;
+    public String email;
+    public String usercol;
 
+
+    public User() {
+    }
+
+    public User(int id, String login, String email, String usercol) {
+        this.id = id;
+        this.login = login;
+        this.email = email;
+        this.usercol = usercol;
+    }
 
     public int getId() {
         return id;
@@ -43,5 +53,10 @@ public class User {
     public String toString() {
         System.out.println("ID = " + id + " LOGIN = " + login + " EMAIL = " + email + " USERCOL = " + usercol);
         return "";
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new User(1, "a", "a", "a"));
+        System.out.println(new User(2, "aa", "aa", "aa"));
     }
 }
